@@ -66,27 +66,27 @@ export class PlayerService {
 
   async sellPlayer(id: string, salePrice: number, saleDate: string): Promise<void> {
     const updated = await firstValueFrom(
-      this.http.patch<Player>(`${API_URL}/${id}`, { action: 'sell', salePrice, saleDate }),
+      this.http.patch<Player>(API_URL, { action: 'sell', salePrice, saleDate }, { params: { id } }),
     );
     this.playersSignal.update((players) => players.map((p) => (p.id === id ? updated : p)));
   }
 
   async editPlayer(id: string, input: NewPlayerInput): Promise<void> {
     const updated = await firstValueFrom(
-      this.http.patch<Player>(`${API_URL}/${id}`, { action: 'edit', ...input }),
+      this.http.patch<Player>(API_URL, { action: 'edit', ...input }, { params: { id } }),
     );
     this.playersSignal.update((players) => players.map((p) => (p.id === id ? updated : p)));
   }
 
   async restorePlayer(id: string): Promise<void> {
     const updated = await firstValueFrom(
-      this.http.patch<Player>(`${API_URL}/${id}`, { action: 'restore' }),
+      this.http.patch<Player>(API_URL, { action: 'restore' }, { params: { id } }),
     );
     this.playersSignal.update((players) => players.map((p) => (p.id === id ? updated : p)));
   }
 
   async deletePlayer(id: string): Promise<void> {
-    await firstValueFrom(this.http.delete<void>(`${API_URL}/${id}`));
+    await firstValueFrom(this.http.delete<void>(API_URL, { params: { id } }));
     this.playersSignal.update((players) => players.filter((p) => p.id !== id));
   }
 }

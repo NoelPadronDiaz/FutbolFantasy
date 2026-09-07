@@ -14,7 +14,7 @@ Aplicación en Angular para controlar mis fichajes del Fantasy de La Liga: jugad
 - **Backend**: funciones serverless de Vercel en `api/` (una por endpoint), que hablan con Postgres a través de `@neondatabase/serverless`.
 - **Base de datos**: Postgres en [Neon](https://neon.tech), provisionada desde la integración de Vercel (una única tabla `players`, ver `sql/schema.sql`).
 
-Angular no puede conectarse directamente a Postgres desde el navegador, así que todo el acceso a datos pasa por `api/players/index.ts` (listar/crear) y `api/players/[id].ts` (vender/recuperar/eliminar).
+Angular no puede conectarse directamente a Postgres desde el navegador, así que todo el acceso a datos pasa por `api/players/index.ts` (listar/crear vía GET/POST, y vender/recuperar/editar/eliminar vía PATCH/DELETE con `?id=`).
 
 ## Configuración inicial
 
