@@ -1,0 +1,108 @@
+<section class="page">
+  <header class="page-header">
+    <div>
+      <h1>Mi Plantilla</h1>
+      <p class="subtitle">{{ players().length }} jugadores en activo</p>
+    </div>
+    <button class="btn primary" (click)="toggleAddForm()">
+      {{ showAddForm() ? 'Cancelar' : '+ Nuevo fichaje' }}
+    </button>
+  </header>
+
+  @if (showAddForm()) {
+    <form class="card form-card" (ngSubmit)="addPlayer()">
+      <div class="form-grid">
+        <label>
+          Nombre
+          <input type="text" name="name" [(ngModel)]="newName" required placeholder="Ej. Lewandowski" />
+        </label>
+        <label>
+          Posición
+          <select name="position" [(ngModel)]="newPosition">
+            @for (pos of positions; track pos) {
+              <option [value]="pos">{{ pos }}</option>
+            }
+          </select>
+        </label>
+        <label>
+          Equipo real
+          <input type="text" name="realTeam" [(ngModel)]="newRealTeam" placeholder="Ej. Barcelona" />
+        </label>
+        <label>
+          Precio de compra (M€)
+          <input type="number" name="price" [(ngModel)]="newPrice" required min="0" step="0.1" />
+        </label>
+        <label>
+          Fecha de compra
+          <input type="date" name="date" [(ngModel)]="newDate" required />
+        </label>
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn primary" [disabled]="saving()">
+          {{ saving() ? 'Guardando…' : 'Guardar fichaje' }}
+        </button>
+      </div>
+    </form>
+  }
+
+  @if (error()) {
+    <p class="error">{{ error() }}</p>
+  } @else if (loading()) {
+    <p class="empty">Cargando plantilla…</p>
+  } @else if (players().length === 0) {
+    <p class="empty">Todavía no tienes jugadores en tu plantilla. ¡Añade tu primer fichaje!</p>
+  } @else {
+    <div class="table-wrap card">
+      <table>
+        <thead>
+          <tr>
+            <th>Jugador</th>
+            <th>Posición</th>
+            <th>Equipo</th>
+            <th>Precio compra</th>
+            <th>Fecha compra</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (player of players(); track player.id) {
+            <tr>
+              <td class="name">{{ player.name }}</td>
+              <td><span class="badge">{{ player.position }}</span></td>
+              <td>{{ player.realTeam || '-' }}</td>
+              <td>{{ player.purchasePrice | euros }}</td>
+              <td>{{ player.purchaseDate }}</td>
+              <td class="actions">
+                <button class="btn small" (click)="openSellDialog(player)">Vender</button>
+                <button class="btn small danger" (click)="deletePlayer(player)">Eliminar</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+
+  @if (sellingPlayer(); as player) {
+    <div class="overlay" (click)="closeSellDialog()">
+      <form class="card dialog" (click)="$event.stopPropagation()" (ngSubmit)="confirmSell()">
+        <h2>Vender a {{ player.name }}</h2>
+        <p class="subtitle">Precio de compra: {{ player.purchasePrice | euros }}</p>
+        <label>
+          Precio de venta (M€)
+          <input type="number" name="salePrice" [(ngModel)]="salePrice" required min="0" step="0.1" autofocus />
+        </label>
+        <label>
+          Fecha de venta
+          <input type="date" name="saleDate" [(ngModel)]="saleDate" required />
+        </label>
+        <div class="form-actions">
+          <button type="button" class="btn" (click)="closeSellDialog()">Cancelar</button>
+          <button type="submit" class="btn primary" [disabled]="saving()">
+            {{ saving() ? 'Guardando…' : 'Confirmar venta' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  }
+</section>

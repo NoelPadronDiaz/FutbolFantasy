@@ -1,0 +1,44 @@
+.topbar {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.topbar-inner {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.brand {
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+
+nav {
+  display: flex;
+  gap: 4px;
+}
+
+nav a {
+  text-decoration: none;
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 8px 14px;
+  border-radius: 6px;
+}
+
+nav a:hover {
+  background: var(--bg);
+  color: var(--text);
+}
+
+nav a.active {
+  background: var(--primary);
+  color: #fff;
+}

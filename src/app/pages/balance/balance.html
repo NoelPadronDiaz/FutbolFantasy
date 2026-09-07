@@ -1,0 +1,79 @@
+<section class="page">
+  <header class="page-header">
+    <div>
+      <h1>Balance</h1>
+      <p class="subtitle">Resultado de tus compraventas</p>
+    </div>
+  </header>
+
+  @if (error()) {
+    <p class="error">{{ error() }}</p>
+  } @else if (loading()) {
+    <p class="empty">Cargando balance…</p>
+  } @else {
+
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="label">Balance neto</div>
+      <div class="value" [class.positive]="balance().net > 0" [class.negative]="balance().net < 0">
+        {{ balance().net > 0 ? '+' : '' }}{{ balance().net | euros }}
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Invertido en ventas</div>
+      <div class="value">{{ balance().totalCost | euros }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Recibido por ventas</div>
+      <div class="value">{{ balance().totalRevenue | euros }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Invertido en plantilla actual</div>
+      <div class="value">{{ squadInvestment() | euros }}</div>
+    </div>
+  </div>
+
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="label">Ventas con ganancia</div>
+      <div class="value positive">{{ balance().wins }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Ventas con pérdida</div>
+      <div class="value negative">{{ balance().losses }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">Jugadores en plantilla</div>
+      <div class="value">{{ activeCount() }}</div>
+    </div>
+  </div>
+
+  @if (ranking().length > 0) {
+    <h2>Ranking de compraventas</h2>
+    <div class="table-wrap card">
+      <table>
+        <thead>
+          <tr>
+            <th>Jugador</th>
+            <th>Compra</th>
+            <th>Venta</th>
+            <th>Resultado</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (player of ranking(); track player.id) {
+            <tr>
+              <td class="name">{{ player.name }}</td>
+              <td>{{ player.purchasePrice | euros }}</td>
+              <td>{{ player.salePrice | euros }}</td>
+              <td [class.positive]="profit(player) > 0" [class.negative]="profit(player) < 0">
+                {{ profit(player) > 0 ? '+' : '' }}{{ profit(player) | euros }}
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+  }
+</section>

@@ -1,0 +1,52 @@
+<section class="page">
+  <header class="page-header">
+    <div>
+      <h1>Histórico de fichajes</h1>
+      <p class="subtitle">{{ players().length }} jugadores vendidos</p>
+    </div>
+  </header>
+
+  @if (error()) {
+    <p class="error">{{ error() }}</p>
+  } @else if (loading()) {
+    <p class="empty">Cargando histórico…</p>
+  } @else if (players().length === 0) {
+    <p class="empty">Todavía no has vendido a ningún jugador.</p>
+  } @else {
+    <div class="table-wrap card">
+      <table>
+        <thead>
+          <tr>
+            <th>Jugador</th>
+            <th>Posición</th>
+            <th>Compra</th>
+            <th>Venta</th>
+            <th>Fecha compra</th>
+            <th>Fecha venta</th>
+            <th>Ganancia/Pérdida</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (player of players(); track player.id) {
+            <tr>
+              <td class="name">{{ player.name }}</td>
+              <td><span class="badge">{{ player.position }}</span></td>
+              <td>{{ player.purchasePrice | euros }}</td>
+              <td>{{ player.salePrice | euros }}</td>
+              <td>{{ player.purchaseDate }}</td>
+              <td>{{ player.saleDate }}</td>
+              <td [class.positive]="profit(player) > 0" [class.negative]="profit(player) < 0">
+                {{ profit(player) > 0 ? '+' : '' }}{{ profit(player) | euros }}
+              </td>
+              <td class="actions">
+                <button class="btn small" (click)="restore(player)">Recuperar</button>
+                <button class="btn small danger" (click)="remove(player)">Eliminar</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>
