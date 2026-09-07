@@ -1,7 +1,8 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { EditPlayerDialog } from '../../components/edit-player-dialog/edit-player-dialog';
 import { EurosPipe } from '../../pipes/euros.pipe';
-import { PLAYER_POSITIONS, Player, PlayerPosition } from '../../models/player.model';
+import { NewPlayerInput, PLAYER_POSITIONS, Player, PlayerPosition } from '../../models/player.model';
 import { PlayerService } from '../../services/player.service';
 
 function today(): string {
@@ -10,7 +11,7 @@ function today(): string {
 
 @Component({
   selector: 'app-squad',
-  imports: [FormsModule, EurosPipe],
+  imports: [FormsModule, EurosPipe, EditPlayerDialog],
   templateUrl: './squad.html',
   styleUrl: './squad.scss',
 })
@@ -33,6 +34,8 @@ export class Squad {
   sellingPlayer = signal<Player | null>(null);
   saleDate = today();
   salePrice: number | null = null;
+
+  editingPlayer = signal<Player | null>(null);
 
   toggleAddForm(): void {
     this.showAddForm.update((v) => !v);
@@ -85,6 +88,30 @@ export class Squad {
       this.closeSellDialog();
     } catch {
       alert('No se pudo registrar la venta. Inténtalo de nuevo.');
+    } finally {
+      this.saving.set(false);
+    }
+  }
+
+  openEditDialog(player: Player): void {
+    this.editingPlayer.set(player);
+  }
+
+  closeEditDialog(): void {
+    this.editingPlayer.set(null);
+  }
+
+  async saveEdit(input: NewPlayerInput): Promise<void> {
+    const player = this.editingPlayer();
+    if (!player) {
+      return;
+    }
+    this.saving.set(true);
+    try {
+      await this.playerService.editPlayer(player.id, input);
+      this.closeEditDialog();
+    } catch {
+      alert('No se pudieron guardar los cambios. Inténtalo de nuevo.');
     } finally {
       this.saving.set(false);
     }

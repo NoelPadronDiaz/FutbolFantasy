@@ -33,8 +33,21 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
          RETURNING ${PLAYER_COLUMNS}`,
         [id],
       )) as PlayerRow[];
+    } else if (action === 'edit') {
+      const { name, position, realTeam, purchasePrice, purchaseDate } = req.body ?? {};
+      if (!name || !position || purchasePrice === undefined || !purchaseDate) {
+        res.status(400).json({ error: 'Faltan campos obligatorios: name, position, purchasePrice, purchaseDate.' });
+        return;
+      }
+      rows = (await sql.query(
+        `UPDATE players
+         SET name = $2, position = $3, real_team = $4, purchase_price = $5, purchase_date = $6
+         WHERE id = $1
+         RETURNING ${PLAYER_COLUMNS}`,
+        [id, name, position, realTeam || null, purchasePrice, purchaseDate],
+      )) as PlayerRow[];
     } else {
-      res.status(400).json({ error: "action debe ser 'sell' o 'restore'." });
+      res.status(400).json({ error: "action debe ser 'sell', 'restore' o 'edit'." });
       return;
     }
 

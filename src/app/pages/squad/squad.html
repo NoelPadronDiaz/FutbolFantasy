@@ -73,6 +73,7 @@
               <td>{{ player.purchasePrice | euros }}</td>
               <td>{{ player.purchaseDate }}</td>
               <td class="actions">
+                <button class="btn small" (click)="openEditDialog(player)">Editar</button>
                 <button class="btn small" (click)="openSellDialog(player)">Vender</button>
                 <button class="btn small danger" (click)="deletePlayer(player)">Eliminar</button>
               </td>
@@ -104,5 +105,14 @@
         </div>
       </form>
     </div>
+  }
+
+  @if (editingPlayer(); as player) {
+    <app-edit-player-dialog
+      [player]="player"
+      [saving]="saving()"
+      (save)="saveEdit($event)"
+      (cancel)="closeEditDialog()"
+    />
   }
 </section>

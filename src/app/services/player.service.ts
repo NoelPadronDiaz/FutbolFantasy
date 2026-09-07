@@ -71,6 +71,13 @@ export class PlayerService {
     this.playersSignal.update((players) => players.map((p) => (p.id === id ? updated : p)));
   }
 
+  async editPlayer(id: string, input: NewPlayerInput): Promise<void> {
+    const updated = await firstValueFrom(
+      this.http.patch<Player>(`${API_URL}/${id}`, { action: 'edit', ...input }),
+    );
+    this.playersSignal.update((players) => players.map((p) => (p.id === id ? updated : p)));
+  }
+
   async restorePlayer(id: string): Promise<void> {
     const updated = await firstValueFrom(
       this.http.patch<Player>(`${API_URL}/${id}`, { action: 'restore' }),

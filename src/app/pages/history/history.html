@@ -40,6 +40,7 @@
                 {{ profit(player) > 0 ? '+' : '' }}{{ profit(player) | euros }}
               </td>
               <td class="actions">
+                <button class="btn small" (click)="openEditDialog(player)">Editar</button>
                 <button class="btn small" (click)="restore(player)">Recuperar</button>
                 <button class="btn small danger" (click)="remove(player)">Eliminar</button>
               </td>
@@ -48,5 +49,14 @@
         </tbody>
       </table>
     </div>
+  }
+
+  @if (editingPlayer(); as player) {
+    <app-edit-player-dialog
+      [player]="player"
+      [saving]="saving()"
+      (save)="saveEdit($event)"
+      (cancel)="closeEditDialog()"
+    />
   }
 </section>

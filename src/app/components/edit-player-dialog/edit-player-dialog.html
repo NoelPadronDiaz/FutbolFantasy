@@ -1,0 +1,37 @@
+<div class="overlay" (click)="cancel.emit()">
+  <form class="card dialog wide" (click)="$event.stopPropagation()" (ngSubmit)="submit()">
+    <h2>Editar a {{ player().name }}</h2>
+    <div class="form-grid">
+      <label>
+        Nombre
+        <input type="text" name="name" [(ngModel)]="name" required autofocus />
+      </label>
+      <label>
+        Posición
+        <select name="position" [(ngModel)]="position">
+          @for (pos of positions; track pos) {
+            <option [value]="pos">{{ pos }}</option>
+          }
+        </select>
+      </label>
+      <label>
+        Equipo real
+        <input type="text" name="realTeam" [(ngModel)]="realTeam" />
+      </label>
+      <label>
+        Precio de compra (M€)
+        <input type="number" name="price" [(ngModel)]="price" required min="0" step="0.1" />
+      </label>
+      <label>
+        Fecha de compra
+        <input type="date" name="date" [(ngModel)]="date" required />
+      </label>
+    </div>
+    <div class="form-actions">
+      <button type="button" class="btn" (click)="cancel.emit()">Cancelar</button>
+      <button type="submit" class="btn primary" [disabled]="saving()">
+        {{ saving() ? 'Guardando…' : 'Guardar cambios' }}
+      </button>
+    </div>
+  </form>
+</div>
