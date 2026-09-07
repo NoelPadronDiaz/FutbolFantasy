@@ -5,6 +5,16 @@ import { NewPlayerInput, Player } from '../models/player.model';
 
 const API_URL = '/api/players';
 
+function computeBalance(sold: Player[]) {
+  const totalCost = sold.reduce((sum, p) => sum + p.purchasePrice, 0);
+  const totalRevenue = sold.reduce((sum, p) => sum + (p.salePrice ?? 0), 0);
+  const net = totalRevenue - totalCost;
+  const wins = sold.filter((p) => (p.salePrice ?? 0) > p.purchasePrice).length;
+  const losses = sold.filter((p) => (p.salePrice ?? 0) < p.purchasePrice).length;
+  const flat = sold.length - wins - losses;
+  return { totalCost, totalRevenue, net, wins, losses, flat, count: sold.length };
+}
+
 @Injectable({ providedIn: 'root' })
 export class PlayerService {
   private readonly http = inject(HttpClient);
@@ -23,16 +33,15 @@ export class PlayerService {
     this.activePlayers().reduce((sum, p) => sum + p.purchasePrice, 0),
   );
 
-  readonly balance = computed(() => {
-    const sold = this.soldPlayers();
-    const totalCost = sold.reduce((sum, p) => sum + p.purchasePrice, 0);
-    const totalRevenue = sold.reduce((sum, p) => sum + (p.salePrice ?? 0), 0);
-    const net = totalRevenue - totalCost;
-    const wins = sold.filter((p) => (p.salePrice ?? 0) > p.purchasePrice).length;
-    const losses = sold.filter((p) => (p.salePrice ?? 0) < p.purchasePrice).length;
-    const flat = sold.length - wins - losses;
-    return { totalCost, totalRevenue, net, wins, losses, flat, count: sold.length };
-  });
+  readonly balance = computed(() => computeBalance(this.soldPlayers()));
+
+  readonly freeBalance = computed(() =>
+    computeBalance(this.soldPlayers().filter((p) => p.purchasePrice === 0)),
+  );
+
+  readonly paidBalance = computed(() =>
+    computeBalance(this.soldPlayers().filter((p) => p.purchasePrice > 0)),
+  );
 
   constructor() {
     this.refresh();

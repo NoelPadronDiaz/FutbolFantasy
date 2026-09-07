@@ -48,6 +48,46 @@
     </div>
   </div>
 
+  <h2>Balance por origen del fichaje</h2>
+  <div class="split-grid">
+    <div class="card split-card">
+      <h3>Jugadores de inicio (0€)</h3>
+      <p class="subtitle">{{ freeBalance().count }} vendidos · asignados por el juego</p>
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="label">Balance neto</div>
+          <div class="value" [class.positive]="freeBalance().net > 0" [class.negative]="freeBalance().net < 0">
+            {{ freeBalance().net > 0 ? '+' : '' }}{{ freeBalance().net | euros }}
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="label">Recibido por ventas</div>
+          <div class="value">{{ freeBalance().totalRevenue | euros }}</div>
+        </div>
+      </div>
+    </div>
+    <div class="card split-card">
+      <h3>Fichajes propios (comprados)</h3>
+      <p class="subtitle">{{ paidBalance().count }} vendidos · comprados por ti</p>
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="label">Balance neto</div>
+          <div class="value" [class.positive]="paidBalance().net > 0" [class.negative]="paidBalance().net < 0">
+            {{ paidBalance().net > 0 ? '+' : '' }}{{ paidBalance().net | euros }}
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="label">Invertido</div>
+          <div class="value">{{ paidBalance().totalCost | euros }}</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">Recibido por ventas</div>
+          <div class="value">{{ paidBalance().totalRevenue | euros }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   @if (ranking().length > 0) {
     <h2>Ranking de compraventas</h2>
     <div class="table-wrap card">

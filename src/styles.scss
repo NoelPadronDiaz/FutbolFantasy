@@ -347,6 +347,27 @@ td.actions {
   color: #991b1b;
 }
 
+.split-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  align-items: start;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.split-card h3 {
+  font-size: 1rem;
+}
+
+.split-card .subtitle {
+  margin-bottom: 14px;
+}
+
+.split-card .stat-grid {
+  margin-bottom: 0;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+}
+
 .positive {
   color: var(--positive);
   font-weight: 700;

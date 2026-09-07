@@ -17,6 +17,8 @@ export class Balance {
   private readonly playerService = inject(PlayerService);
 
   readonly balance = this.playerService.balance;
+  readonly freeBalance = this.playerService.freeBalance;
+  readonly paidBalance = this.playerService.paidBalance;
   readonly squadInvestment = this.playerService.squadInvestment;
   readonly activeCount = () => this.playerService.activePlayers().length;
   readonly loading = this.playerService.loading;
