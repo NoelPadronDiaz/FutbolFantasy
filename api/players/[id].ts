@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { PLAYER_COLUMNS, sql, toDto, type PlayerRow } from '../_db';
+import { PLAYER_COLUMNS, sql, toDto, type PlayerRow } from '../_db.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   const { id } = req.query;
