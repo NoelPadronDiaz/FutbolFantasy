@@ -1,11 +1,15 @@
-import { Component, inject } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
+import { SortableHeader } from '../../components/sortable-header/sortable-header';
 import { EurosPipe } from '../../pipes/euros.pipe';
 import { Player } from '../../models/player.model';
 import { PlayerService } from '../../services/player.service';
+import { SortDirection, compareValues } from '../../utils/sort';
+
+type RankingSortField = 'name' | 'purchasePrice' | 'salePrice' | 'profit';
 
 @Component({
   selector: 'app-balance',
-  imports: [EurosPipe],
+  imports: [EurosPipe, SortableHeader],
   templateUrl: './balance.html',
   styleUrl: './balance.scss',
 })
@@ -18,8 +22,39 @@ export class Balance {
   readonly loading = this.playerService.loading;
   readonly error = this.playerService.error;
 
-  readonly ranking = () =>
-    [...this.playerService.soldPlayers()].sort((a, b) => this.profit(b) - this.profit(a));
+  sortField = signal<RankingSortField>('profit');
+  sortDir = signal<SortDirection>('desc');
+
+  readonly ranking = computed(() => {
+    const field = this.sortField();
+    const dir = this.sortDir();
+    return [...this.playerService.soldPlayers()].sort((a, b) =>
+      compareValues(this.sortValue(a, field), this.sortValue(b, field), dir),
+    );
+  });
+
+  toggleSort(field: string): void {
+    const f = field as RankingSortField;
+    if (this.sortField() === f) {
+      this.sortDir.update((d) => (d === 'asc' ? 'desc' : 'asc'));
+    } else {
+      this.sortField.set(f);
+      this.sortDir.set('asc');
+    }
+  }
+
+  private sortValue(player: Player, field: RankingSortField): string | number | undefined {
+    switch (field) {
+      case 'name':
+        return player.name;
+      case 'purchasePrice':
+        return player.purchasePrice;
+      case 'salePrice':
+        return player.salePrice;
+      case 'profit':
+        return this.profit(player);
+    }
+  }
 
   profit(player: Player): number {
     return (player.salePrice ?? 0) - player.purchasePrice;

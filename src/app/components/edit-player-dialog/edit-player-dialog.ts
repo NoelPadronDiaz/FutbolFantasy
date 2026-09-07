@@ -1,10 +1,11 @@
 import { Component, OnInit, input, output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { TeamSelect } from '../team-select/team-select';
 import { NewPlayerInput, PLAYER_POSITIONS, Player, PlayerPosition } from '../../models/player.model';
 
 @Component({
   selector: 'app-edit-player-dialog',
-  imports: [FormsModule],
+  imports: [FormsModule, TeamSelect],
   templateUrl: './edit-player-dialog.html',
 })
 export class EditPlayerDialog implements OnInit {
@@ -17,7 +18,7 @@ export class EditPlayerDialog implements OnInit {
 
   name = '';
   position: PlayerPosition = 'Delantero';
-  realTeam = '';
+  realTeam: string | undefined = undefined;
   price: number | null = null;
   date = '';
 
@@ -25,7 +26,7 @@ export class EditPlayerDialog implements OnInit {
     const player = this.player();
     this.name = player.name;
     this.position = player.position;
-    this.realTeam = player.realTeam ?? '';
+    this.realTeam = player.realTeam;
     this.price = player.purchasePrice;
     this.date = player.purchaseDate;
   }
@@ -37,7 +38,7 @@ export class EditPlayerDialog implements OnInit {
     this.save.emit({
       name: this.name.trim(),
       position: this.position,
-      realTeam: this.realTeam.trim() || undefined,
+      realTeam: this.realTeam,
       purchasePrice: this.price,
       purchaseDate: this.date,
     });

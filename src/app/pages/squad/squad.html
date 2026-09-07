@@ -26,7 +26,7 @@
         </label>
         <label>
           Equipo real
-          <input type="text" name="realTeam" [(ngModel)]="newRealTeam" placeholder="Ej. Barcelona" />
+          <app-team-select name="realTeam" [(ngModel)]="newRealTeam" />
         </label>
         <label>
           Precio de compra (M€)
@@ -56,11 +56,11 @@
       <table>
         <thead>
           <tr>
-            <th>Jugador</th>
-            <th>Posición</th>
-            <th>Equipo</th>
-            <th>Precio compra</th>
-            <th>Fecha compra</th>
+            <th appSortableHeader field="name" [activeField]="sortField()" [direction]="sortDir()" (sortChange)="toggleSort($event)">Jugador</th>
+            <th appSortableHeader field="position" [activeField]="sortField()" [direction]="sortDir()" (sortChange)="toggleSort($event)">Posición</th>
+            <th appSortableHeader field="realTeam" [activeField]="sortField()" [direction]="sortDir()" (sortChange)="toggleSort($event)">Equipo</th>
+            <th appSortableHeader field="purchasePrice" [activeField]="sortField()" [direction]="sortDir()" (sortChange)="toggleSort($event)">Precio compra</th>
+            <th appSortableHeader field="purchaseDate" [activeField]="sortField()" [direction]="sortDir()" (sortChange)="toggleSort($event)">Fecha compra</th>
             <th></th>
           </tr>
         </thead>
@@ -68,8 +68,14 @@
           @for (player of players(); track player.id) {
             <tr>
               <td class="name">{{ player.name }}</td>
-              <td><span class="badge">{{ player.position }}</span></td>
-              <td>{{ player.realTeam || '-' }}</td>
+              <td><span class="badge" [attr.data-position]="player.position">{{ player.position }}</span></td>
+              <td>
+                @if (teamCrest(player.realTeam); as crest) {
+                  <span class="team-cell"><img [src]="crest" [alt]="player.realTeam" class="team-crest" />{{ player.realTeam }}</span>
+                } @else {
+                  {{ player.realTeam || '-' }}
+                }
+              </td>
               <td>{{ player.purchasePrice | euros }}</td>
               <td>{{ player.purchaseDate }}</td>
               <td class="actions">

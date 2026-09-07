@@ -54,10 +54,10 @@
       <table>
         <thead>
           <tr>
-            <th>Jugador</th>
-            <th>Compra</th>
-            <th>Venta</th>
-            <th>Resultado</th>
+            <th appSortableHeader field="name" [activeField]="sortField()" [direction]="sortDir()" (sortChange)="toggleSort($event)">Jugador</th>
+            <th appSortableHeader field="purchasePrice" [activeField]="sortField()" [direction]="sortDir()" (sortChange)="toggleSort($event)">Compra</th>
+            <th appSortableHeader field="salePrice" [activeField]="sortField()" [direction]="sortDir()" (sortChange)="toggleSort($event)">Venta</th>
+            <th appSortableHeader field="profit" [activeField]="sortField()" [direction]="sortDir()" (sortChange)="toggleSort($event)">Resultado</th>
           </tr>
         </thead>
         <tbody>

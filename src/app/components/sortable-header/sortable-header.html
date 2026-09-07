@@ -1,0 +1,6 @@
+<button type="button" class="sort-btn" (click)="sortChange.emit(field())">
+  <ng-content />
+  @if (activeField() === field()) {
+    <span class="sort-arrow">{{ direction() === 'asc' ? '▲' : '▼' }}</span>
+  }
+</button>

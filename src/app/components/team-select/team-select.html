@@ -1,0 +1,34 @@
+<div class="team-select">
+  <button
+    type="button"
+    class="team-select-trigger"
+    [disabled]="disabled()"
+    (click)="toggle()"
+  >
+    @if (selectedTeam(); as team) {
+      <img [src]="team.crest" [alt]="team.name" class="team-crest" />
+      <span>{{ team.name }}</span>
+    } @else {
+      <span class="placeholder">Sin equipo</span>
+    }
+    <span class="chevron">▾</span>
+  </button>
+
+  @if (open()) {
+    <ul class="team-select-list">
+      <li>
+        <button type="button" (click)="select(undefined)">
+          <span class="placeholder">Sin equipo</span>
+        </button>
+      </li>
+      @for (team of teams; track team.name) {
+        <li>
+          <button type="button" [class.active]="team.name === value()" (click)="select(team)">
+            <img [src]="team.crest" [alt]="team.name" class="team-crest" />
+            <span>{{ team.name }}</span>
+          </button>
+        </li>
+      }
+    </ul>
+  }
+</div>

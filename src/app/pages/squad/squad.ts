@@ -1,17 +1,38 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { EditPlayerDialog } from '../../components/edit-player-dialog/edit-player-dialog';
+import { SortableHeader } from '../../components/sortable-header/sortable-header';
+import { TeamSelect } from '../../components/team-select/team-select';
 import { EurosPipe } from '../../pipes/euros.pipe';
 import { NewPlayerInput, PLAYER_POSITIONS, Player, PlayerPosition } from '../../models/player.model';
+import { findTeamCrest } from '../../models/team.model';
 import { PlayerService } from '../../services/player.service';
+import { SortDirection, compareValues } from '../../utils/sort';
 
 function today(): string {
   return new Date().toISOString().slice(0, 10);
 }
 
+type SquadSortField = 'name' | 'position' | 'realTeam' | 'purchasePrice' | 'purchaseDate';
+
+function sortValue(player: Player, field: SquadSortField): string | number | undefined {
+  switch (field) {
+    case 'name':
+      return player.name;
+    case 'position':
+      return player.position;
+    case 'realTeam':
+      return player.realTeam;
+    case 'purchasePrice':
+      return player.purchasePrice;
+    case 'purchaseDate':
+      return player.purchaseDate;
+  }
+}
+
 @Component({
   selector: 'app-squad',
-  imports: [FormsModule, EurosPipe, EditPlayerDialog],
+  imports: [FormsModule, EurosPipe, EditPlayerDialog, SortableHeader, TeamSelect],
   templateUrl: './squad.html',
   styleUrl: './squad.scss',
 })
@@ -19,15 +40,36 @@ export class Squad {
   private readonly playerService = inject(PlayerService);
 
   readonly positions = PLAYER_POSITIONS;
-  readonly players = this.playerService.activePlayers;
   readonly loading = this.playerService.loading;
   readonly error = this.playerService.error;
+  readonly teamCrest = findTeamCrest;
+
+  sortField = signal<SquadSortField>('purchaseDate');
+  sortDir = signal<SortDirection>('desc');
+
+  readonly players = computed(() => {
+    const field = this.sortField();
+    const dir = this.sortDir();
+    return [...this.playerService.activePlayers()].sort((a, b) =>
+      compareValues(sortValue(a, field), sortValue(b, field), dir),
+    );
+  });
+
+  toggleSort(field: string): void {
+    const f = field as SquadSortField;
+    if (this.sortField() === f) {
+      this.sortDir.update((d) => (d === 'asc' ? 'desc' : 'asc'));
+    } else {
+      this.sortField.set(f);
+      this.sortDir.set('asc');
+    }
+  }
 
   showAddForm = signal(false);
   saving = signal(false);
   newName = '';
   newPosition: PlayerPosition = 'Delantero';
-  newRealTeam = '';
+  newRealTeam: string | undefined = undefined;
   newPrice: number | null = null;
   newDate = today();
 
@@ -50,12 +92,12 @@ export class Squad {
       await this.playerService.addPlayer({
         name: this.newName.trim(),
         position: this.newPosition,
-        realTeam: this.newRealTeam.trim() || undefined,
+        realTeam: this.newRealTeam,
         purchasePrice: this.newPrice,
         purchaseDate: this.newDate,
       });
       this.newName = '';
-      this.newRealTeam = '';
+      this.newRealTeam = undefined;
       this.newPrice = null;
       this.newDate = today();
       this.newPosition = 'Delantero';

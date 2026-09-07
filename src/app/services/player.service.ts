@@ -15,17 +15,9 @@ export class PlayerService {
 
   readonly players = this.playersSignal.asReadonly();
 
-  readonly activePlayers = computed(() =>
-    this.playersSignal()
-      .filter((p) => p.status === 'active')
-      .sort((a, b) => b.purchaseDate.localeCompare(a.purchaseDate)),
-  );
+  readonly activePlayers = computed(() => this.playersSignal().filter((p) => p.status === 'active'));
 
-  readonly soldPlayers = computed(() =>
-    this.playersSignal()
-      .filter((p) => p.status === 'sold')
-      .sort((a, b) => (b.saleDate ?? '').localeCompare(a.saleDate ?? '')),
-  );
+  readonly soldPlayers = computed(() => this.playersSignal().filter((p) => p.status === 'sold'));
 
   readonly squadInvestment = computed(() =>
     this.activePlayers().reduce((sum, p) => sum + p.purchasePrice, 0),
