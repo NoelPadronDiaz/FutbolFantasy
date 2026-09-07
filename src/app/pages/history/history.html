@@ -19,6 +19,7 @@
           <tr>
             <th appSortableHeader field="name" [activeField]="sortField()" [direction]="sortDir()" (sortChange)="toggleSort($event)">Jugador</th>
             <th appSortableHeader field="position" [activeField]="sortField()" [direction]="sortDir()" (sortChange)="toggleSort($event)">Posición</th>
+            <th appSortableHeader field="realTeam" [activeField]="sortField()" [direction]="sortDir()" (sortChange)="toggleSort($event)">Equipo</th>
             <th appSortableHeader field="purchasePrice" [activeField]="sortField()" [direction]="sortDir()" (sortChange)="toggleSort($event)">Compra</th>
             <th appSortableHeader field="salePrice" [activeField]="sortField()" [direction]="sortDir()" (sortChange)="toggleSort($event)">Venta</th>
             <th appSortableHeader field="purchaseDate" [activeField]="sortField()" [direction]="sortDir()" (sortChange)="toggleSort($event)">Fecha compra</th>
@@ -32,6 +33,13 @@
             <tr>
               <td class="name">{{ player.name }}</td>
               <td><span class="badge" [attr.data-position]="player.position">{{ player.position }}</span></td>
+              <td>
+                @if (teamCrest(player.realTeam); as crest) {
+                  <span class="team-cell"><img [src]="crest" [alt]="player.realTeam" class="team-crest" />{{ player.realTeam }}</span>
+                } @else {
+                  {{ player.realTeam || '-' }}
+                }
+              </td>
               <td>{{ player.purchasePrice | euros }}</td>
               <td>{{ player.salePrice | euros }}</td>
               <td>{{ player.purchaseDate }}</td>

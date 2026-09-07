@@ -3,12 +3,14 @@ import { EditPlayerDialog } from '../../components/edit-player-dialog/edit-playe
 import { SortableHeader } from '../../components/sortable-header/sortable-header';
 import { EurosPipe } from '../../pipes/euros.pipe';
 import { NewPlayerInput, Player } from '../../models/player.model';
+import { findTeamCrest } from '../../models/team.model';
 import { PlayerService } from '../../services/player.service';
 import { SortDirection, compareValues } from '../../utils/sort';
 
 type HistorySortField =
   | 'name'
   | 'position'
+  | 'realTeam'
   | 'purchasePrice'
   | 'salePrice'
   | 'purchaseDate'
@@ -26,6 +28,7 @@ export class History {
 
   readonly loading = this.playerService.loading;
   readonly error = this.playerService.error;
+  readonly teamCrest = findTeamCrest;
 
   editingPlayer = signal<Player | null>(null);
   saving = signal(false);
@@ -57,6 +60,8 @@ export class History {
         return player.name;
       case 'position':
         return player.position;
+      case 'realTeam':
+        return player.realTeam;
       case 'purchasePrice':
         return player.purchasePrice;
       case 'salePrice':
