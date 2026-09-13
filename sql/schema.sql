@@ -10,16 +10,25 @@ CREATE TABLE IF NOT EXISTS players (
   name TEXT NOT NULL,
   position TEXT NOT NULL CHECK (position IN ('Portero', 'Defensa', 'Centrocampista', 'Delantero')),
   real_team TEXT,
-  purchase_price NUMERIC(10, 2) NOT NULL CHECK (purchase_price >= 0),
+  purchase_price NUMERIC(14, 2) NOT NULL CHECK (purchase_price >= 0),
   purchase_date DATE NOT NULL,
-  sale_price NUMERIC(10, 2) CHECK (sale_price IS NULL OR sale_price >= 0),
+  sale_price NUMERIC(14, 2) CHECK (sale_price IS NULL OR sale_price >= 0),
   sale_date DATE,
   status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'sold')),
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-  user_id UUID REFERENCES users (id)
+  user_id UUID REFERENCES users (id),
+  real_price NUMERIC(14, 2)
 );
 
 ALTER TABLE players ADD COLUMN IF NOT EXISTS user_id UUID REFERENCES users (id);
+ALTER TABLE players ADD COLUMN IF NOT EXISTS real_price NUMERIC(14, 2);
+
+-- Widen to NUMERIC(14, 2) in case these columns already existed with a
+-- narrower precision (e.g. NUMERIC(10, 2) overflows above ~100M, which real
+-- LaLiga Fantasy market values can exceed).
+ALTER TABLE players ALTER COLUMN purchase_price TYPE NUMERIC(14, 2);
+ALTER TABLE players ALTER COLUMN sale_price TYPE NUMERIC(14, 2);
+ALTER TABLE players ALTER COLUMN real_price TYPE NUMERIC(14, 2);
 
 CREATE INDEX IF NOT EXISTS players_status_idx ON players (status);
 CREATE INDEX IF NOT EXISTS players_user_id_idx ON players (user_id);

@@ -4,6 +4,15 @@ import { firstValueFrom } from 'rxjs';
 import { NewPlayerInput, Player } from '../models/player.model';
 
 const API_URL = '/api/players';
+const REAL_PRICES_URL = '/api/cron/update-real-prices';
+
+export interface RealPricesUpdateResult {
+  totalApiPlayers: number;
+  totalOurPlayers: number;
+  matched: number;
+  updated: number;
+  failed: number;
+}
 
 function computeBalance(sold: Player[]) {
   const totalCost = sold.reduce((sum, p) => sum + p.purchasePrice, 0);
@@ -70,6 +79,12 @@ export class PlayerService {
     this.loading.set(true);
     this.error.set(null);
     this.loadedOnce = false;
+  }
+
+  async refreshRealPrices(): Promise<RealPricesUpdateResult> {
+    const result = await firstValueFrom(this.http.get<RealPricesUpdateResult>(REAL_PRICES_URL));
+    await this.refresh();
+    return result;
   }
 
   async addPlayer(input: NewPlayerInput): Promise<void> {

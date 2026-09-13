@@ -5,7 +5,7 @@ export const sql = neon(process.env.DATABASE_URL!);
 // Cast dates to text so the driver returns 'YYYY-MM-DD' as-is, instead of
 // parsing them into a JS Date and shifting the day depending on server timezone.
 export const PLAYER_COLUMNS = `id, name, position, real_team, purchase_price,
-  purchase_date::text AS purchase_date, sale_price, sale_date::text AS sale_date, status`;
+  purchase_date::text AS purchase_date, sale_price, sale_date::text AS sale_date, status, real_price`;
 
 export type PlayerRow = {
   id: string;
@@ -17,6 +17,7 @@ export type PlayerRow = {
   sale_price: string | null;
   sale_date: string | null;
   status: string;
+  real_price: string | null;
 };
 
 export type PlayerDto = {
@@ -29,6 +30,7 @@ export type PlayerDto = {
   salePrice?: number;
   saleDate?: string;
   status: string;
+  realPrice?: number;
 };
 
 export function toDto(row: PlayerRow): PlayerDto {
@@ -42,5 +44,6 @@ export function toDto(row: PlayerRow): PlayerDto {
     salePrice: row.sale_price !== null ? Number(row.sale_price) : undefined,
     saleDate: row.sale_date ?? undefined,
     status: row.status,
+    realPrice: row.real_price !== null && row.real_price !== undefined ? Number(row.real_price) : undefined,
   };
 }

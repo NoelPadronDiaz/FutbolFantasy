@@ -4,9 +4,14 @@
       <h1>Mi Plantilla</h1>
       <p class="subtitle">{{ players().length }} jugadores en activo</p>
     </div>
-    <button class="btn primary" (click)="toggleAddForm()">
-      {{ showAddForm() ? 'Cancelar' : '+ Nuevo fichaje' }}
-    </button>
+    <div class="header-actions">
+      <button class="btn" [disabled]="updatingRealPrices()" (click)="updateRealPrices()">
+        {{ updatingRealPrices() ? 'Actualizando…' : 'Actualizar valores reales' }}
+      </button>
+      <button class="btn primary" (click)="toggleAddForm()">
+        {{ showAddForm() ? 'Cancelar' : '+ Nuevo fichaje' }}
+      </button>
+    </div>
   </header>
 
   @if (showAddForm()) {
@@ -60,6 +65,8 @@
             <th appSortableHeader field="position" [activeField]="sortField()" [direction]="sortDir()" (sortChange)="toggleSort($event)">Posición</th>
             <th appSortableHeader field="realTeam" [activeField]="sortField()" [direction]="sortDir()" (sortChange)="toggleSort($event)">Equipo</th>
             <th appSortableHeader field="purchasePrice" [activeField]="sortField()" [direction]="sortDir()" (sortChange)="toggleSort($event)">Precio compra</th>
+            <th appSortableHeader field="realPrice" [activeField]="sortField()" [direction]="sortDir()" (sortChange)="toggleSort($event)">Valor real</th>
+            <th appSortableHeader field="priceDiff" [activeField]="sortField()" [direction]="sortDir()" (sortChange)="toggleSort($event)">Diferencia</th>
             <th appSortableHeader field="purchaseDate" [activeField]="sortField()" [direction]="sortDir()" (sortChange)="toggleSort($event)">Fecha compra</th>
             <th></th>
           </tr>
@@ -77,6 +84,19 @@
                 }
               </td>
               <td>{{ player.purchasePrice | euros }}</td>
+              <td
+                [class.positive]="player.realPrice !== undefined && player.realPrice > player.purchasePrice"
+                [class.negative]="player.realPrice !== undefined && player.realPrice < player.purchasePrice"
+              >
+                {{ player.realPrice !== undefined ? (player.realPrice | euros) : '-' }}
+              </td>
+              <td [class.positive]="(priceDiff(player) ?? 0) > 0" [class.negative]="(priceDiff(player) ?? 0) < 0">
+                @if (player.realPrice === undefined) {
+                  -
+                } @else {
+                  {{ priceDiff(player)! > 0 ? '+' : '' }}{{ priceDiff(player) | euros }}
+                }
+              </td>
               <td>{{ player.purchaseDate }}</td>
               <td class="actions">
                 <button class="btn small" (click)="openEditDialog(player)">Editar</button>

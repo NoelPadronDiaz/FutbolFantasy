@@ -19,6 +19,7 @@ export interface Player {
   salePrice?: number;
   saleDate?: string;
   status: PlayerStatus;
+  realPrice?: number;
 }
 
 export interface NewPlayerInput {

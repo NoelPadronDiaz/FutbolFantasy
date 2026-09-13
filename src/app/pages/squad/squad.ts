@@ -13,7 +13,18 @@ function today(): string {
   return new Date().toISOString().slice(0, 10);
 }
 
-type SquadSortField = 'name' | 'position' | 'realTeam' | 'purchasePrice' | 'purchaseDate';
+type SquadSortField =
+  | 'name'
+  | 'position'
+  | 'realTeam'
+  | 'purchasePrice'
+  | 'purchaseDate'
+  | 'realPrice'
+  | 'priceDiff';
+
+function priceDiff(player: Player): number | undefined {
+  return player.realPrice !== undefined ? player.realPrice - player.purchasePrice : undefined;
+}
 
 function sortValue(player: Player, field: SquadSortField): string | number | undefined {
   switch (field) {
@@ -27,6 +38,10 @@ function sortValue(player: Player, field: SquadSortField): string | number | und
       return player.purchasePrice;
     case 'purchaseDate':
       return player.purchaseDate;
+    case 'realPrice':
+      return player.realPrice;
+    case 'priceDiff':
+      return priceDiff(player);
   }
 }
 
@@ -43,6 +58,9 @@ export class Squad {
   readonly loading = this.playerService.loading;
   readonly error = this.playerService.error;
   readonly teamCrest = findTeamCrest;
+  readonly priceDiff = priceDiff;
+
+  updatingRealPrices = signal(false);
 
   sortField = signal<SquadSortField>('purchaseDate');
   sortDir = signal<SortDirection>('desc');
@@ -81,6 +99,20 @@ export class Squad {
 
   toggleAddForm(): void {
     this.showAddForm.update((v) => !v);
+  }
+
+  async updateRealPrices(): Promise<void> {
+    this.updatingRealPrices.set(true);
+    try {
+      const result = await this.playerService.refreshRealPrices();
+      alert(
+        `Valores reales actualizados: ${result.matched} de ${result.totalOurPlayers} jugadores encontrados en la API (${result.updated} con cambios).`,
+      );
+    } catch {
+      alert('No se pudieron actualizar los valores reales. Inténtalo de nuevo.');
+    } finally {
+      this.updatingRealPrices.set(false);
+    }
   }
 
   async addPlayer(): Promise<void> {
