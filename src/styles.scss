@@ -234,6 +234,56 @@ select:focus {
   font-size: 0.8rem;
 }
 
+.btn.link {
+  background: none;
+  border: none;
+  color: var(--primary);
+  padding: 4px 0;
+  text-align: center;
+}
+
+.btn.link:hover {
+  background: none;
+  text-decoration: underline;
+}
+
+.login-page {
+  min-height: calc(100vh - 61px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 360px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.login-card h1,
+.login-card .subtitle {
+  text-align: center;
+}
+
+.login-card button {
+  width: 100%;
+}
+
+.user-menu {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+}
+
+.user-email {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
 .empty {
   color: var(--muted);
   text-align: center;

@@ -1,0 +1,27 @@
+<section class="login-page">
+  <form class="card login-card" (ngSubmit)="submit()">
+    <h1>⚽ Fantasy Tracker</h1>
+    <p class="subtitle">{{ mode() === 'login' ? 'Inicia sesión' : 'Crea tu cuenta' }}</p>
+
+    @if (error()) {
+      <p class="error">{{ error() }}</p>
+    }
+
+    <label>
+      Email
+      <input type="email" name="email" [(ngModel)]="email" required autofocus />
+    </label>
+    <label>
+      Contraseña
+      <input type="password" name="password" [(ngModel)]="password" required minlength="8" />
+    </label>
+
+    <button type="submit" class="btn primary" [disabled]="saving()">
+      {{ saving() ? 'Guardando…' : mode() === 'login' ? 'Entrar' : 'Crear cuenta' }}
+    </button>
+
+    <button type="button" class="btn link" (click)="toggleMode()">
+      {{ mode() === 'login' ? '¿No tienes cuenta? Regístrate' : '¿Ya tienes cuenta? Inicia sesión' }}
+    </button>
+  </form>
+</section>

@@ -1,10 +1,18 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
+import { requireAuth } from '../_auth.js';
 import { PLAYER_COLUMNS, sql, toDto, type PlayerRow } from '../_db.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
+  const session = requireAuth(req, res);
+  if (!session) {
+    return;
+  }
+  const userId = session.sub;
+
   if (req.method === 'GET') {
     const rows = (await sql.query(
-      `SELECT ${PLAYER_COLUMNS} FROM players ORDER BY created_at DESC`,
+      `SELECT ${PLAYER_COLUMNS} FROM players WHERE user_id = $1 ORDER BY created_at DESC`,
+      [userId],
     )) as PlayerRow[];
     res.status(200).json(rows.map(toDto));
     return;
@@ -19,10 +27,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     const rows = (await sql.query(
-      `INSERT INTO players (name, position, real_team, purchase_price, purchase_date, status)
-       VALUES ($1, $2, $3, $4, $5, 'active')
+      `INSERT INTO players (user_id, name, position, real_team, purchase_price, purchase_date, status)
+       VALUES ($1, $2, $3, $4, $5, $6, 'active')
        RETURNING ${PLAYER_COLUMNS}`,
-      [name, position, realTeam || null, purchasePrice, purchaseDate],
+      [userId, name, position, realTeam || null, purchasePrice, purchaseDate],
     )) as PlayerRow[];
 
     res.status(201).json(toDto(rows[0]));
@@ -37,7 +45,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     if (req.method === 'DELETE') {
-      const rows = (await sql.query('DELETE FROM players WHERE id = $1 RETURNING id', [id])) as { id: string }[];
+      const rows = (await sql.query('DELETE FROM players WHERE id = $1 AND user_id = $2 RETURNING id', [
+        id,
+        userId,
+      ])) as { id: string }[];
       if (rows.length === 0) {
         res.status(404).json({ error: 'Jugador no encontrado.' });
         return;
@@ -57,18 +68,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
       rows = (await sql.query(
         `UPDATE players
-         SET status = 'sold', sale_price = $2, sale_date = $3
-         WHERE id = $1
+         SET status = 'sold', sale_price = $3, sale_date = $4
+         WHERE id = $1 AND user_id = $2
          RETURNING ${PLAYER_COLUMNS}`,
-        [id, salePrice, saleDate],
+        [id, userId, salePrice, saleDate],
       )) as PlayerRow[];
     } else if (action === 'restore') {
       rows = (await sql.query(
         `UPDATE players
          SET status = 'active', sale_price = NULL, sale_date = NULL
-         WHERE id = $1
+         WHERE id = $1 AND user_id = $2
          RETURNING ${PLAYER_COLUMNS}`,
-        [id],
+        [id, userId],
       )) as PlayerRow[];
     } else if (action === 'edit') {
       const { name, position, realTeam, purchasePrice, purchaseDate } = req.body ?? {};
@@ -78,10 +89,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
       rows = (await sql.query(
         `UPDATE players
-         SET name = $2, position = $3, real_team = $4, purchase_price = $5, purchase_date = $6
-         WHERE id = $1
+         SET name = $3, position = $4, real_team = $5, purchase_price = $6, purchase_date = $7
+         WHERE id = $1 AND user_id = $2
          RETURNING ${PLAYER_COLUMNS}`,
-        [id, name, position, realTeam || null, purchasePrice, purchaseDate],
+        [id, userId, name, position, realTeam || null, purchasePrice, purchaseDate],
       )) as PlayerRow[];
     } else {
       res.status(400).json({ error: "action debe ser 'sell', 'restore' o 'edit'." });

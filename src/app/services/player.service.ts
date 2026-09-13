@@ -43,11 +43,16 @@ export class PlayerService {
     computeBalance(this.soldPlayers().filter((p) => p.purchasePrice > 0)),
   );
 
-  constructor() {
-    this.refresh();
+  private loadedOnce = false;
+
+  async refreshIfNeeded(): Promise<void> {
+    if (!this.loadedOnce) {
+      await this.refresh();
+    }
   }
 
   async refresh(): Promise<void> {
+    this.loadedOnce = true;
     this.loading.set(true);
     this.error.set(null);
     try {
@@ -58,6 +63,13 @@ export class PlayerService {
     } finally {
       this.loading.set(false);
     }
+  }
+
+  clear(): void {
+    this.playersSignal.set([]);
+    this.loading.set(true);
+    this.error.set(null);
+    this.loadedOnce = false;
   }
 
   async addPlayer(input: NewPlayerInput): Promise<void> {
