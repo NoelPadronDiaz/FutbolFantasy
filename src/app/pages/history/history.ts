@@ -1,5 +1,6 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { EditPlayerDialog } from '../../components/edit-player-dialog/edit-player-dialog';
+import { Icon } from '../../components/icon/icon';
 import { SortableHeader } from '../../components/sortable-header/sortable-header';
 import { EurosPipe } from '../../pipes/euros.pipe';
 import { NewPlayerInput, Player } from '../../models/player.model';
@@ -19,7 +20,7 @@ type HistorySortField =
 
 @Component({
   selector: 'app-history',
-  imports: [EurosPipe, EditPlayerDialog, SortableHeader],
+  imports: [EurosPipe, EditPlayerDialog, SortableHeader, Icon],
   templateUrl: './history.html',
   styleUrl: './history.scss',
 })

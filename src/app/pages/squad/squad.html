@@ -99,9 +99,15 @@
               </td>
               <td>{{ player.purchaseDate }}</td>
               <td class="actions">
-                <button class="btn small" (click)="openEditDialog(player)">Editar</button>
-                <button class="btn small" (click)="openSellDialog(player)">Vender</button>
-                <button class="btn small danger" (click)="deletePlayer(player)">Eliminar</button>
+                <button class="btn small icon-btn" title="Editar" aria-label="Editar" (click)="openEditDialog(player)">
+                  <app-icon name="edit" />
+                </button>
+                <button class="btn small icon-btn" title="Vender" aria-label="Vender" (click)="openSellDialog(player)">
+                  <app-icon name="sell" />
+                </button>
+                <button class="btn small icon-btn danger" title="Eliminar" aria-label="Eliminar" (click)="deletePlayer(player)">
+                  <app-icon name="delete" />
+                </button>
               </td>
             </tr>
           }
@@ -123,6 +129,22 @@
           Fecha de venta
           <input type="date" name="saleDate" [(ngModel)]="saleDate" required />
         </label>
+
+        @if (player.realPrice === undefined) {
+          <p class="subtitle">Valor real no disponible para este jugador.</p>
+        } @else {
+          <div class="sell-gain">
+            <div class="label">Ganancia vs. valor real ({{ player.realPrice | euros }})</div>
+            <div
+              class="value"
+              [class.positive]="(sellGainVsRealPrice(player) ?? 0) > 0"
+              [class.negative]="(sellGainVsRealPrice(player) ?? 0) < 0"
+            >
+              {{ (sellGainVsRealPrice(player) ?? 0) > 0 ? '+' : '' }}{{ sellGainVsRealPrice(player) | euros }}
+            </div>
+          </div>
+        }
+
         <div class="form-actions">
           <button type="button" class="btn" (click)="closeSellDialog()">Cancelar</button>
           <button type="submit" class="btn primary" [disabled]="saving()">

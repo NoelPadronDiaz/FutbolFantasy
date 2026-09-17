@@ -1,6 +1,7 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { EditPlayerDialog } from '../../components/edit-player-dialog/edit-player-dialog';
+import { Icon } from '../../components/icon/icon';
 import { SortableHeader } from '../../components/sortable-header/sortable-header';
 import { TeamSelect } from '../../components/team-select/team-select';
 import { EurosPipe } from '../../pipes/euros.pipe';
@@ -47,7 +48,7 @@ function sortValue(player: Player, field: SquadSortField): string | number | und
 
 @Component({
   selector: 'app-squad',
-  imports: [FormsModule, EurosPipe, EditPlayerDialog, SortableHeader, TeamSelect],
+  imports: [FormsModule, EurosPipe, EditPlayerDialog, SortableHeader, TeamSelect, Icon],
   templateUrl: './squad.html',
   styleUrl: './squad.scss',
 })
@@ -149,6 +150,13 @@ export class Squad {
 
   closeSellDialog(): void {
     this.sellingPlayer.set(null);
+  }
+
+  sellGainVsRealPrice(player: Player): number | undefined {
+    if (this.salePrice === null || player.realPrice === undefined) {
+      return undefined;
+    }
+    return this.salePrice - player.realPrice;
   }
 
   async confirmSell(): Promise<void> {

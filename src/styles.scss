@@ -240,6 +240,14 @@ select:focus {
   font-size: 0.8rem;
 }
 
+.btn.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  line-height: 0;
+}
+
 .btn.link {
   background: none;
   border: none;
@@ -482,5 +490,24 @@ td.actions {
 
 .stat-card .value {
   font-size: 1.6rem;
+  font-weight: 700;
+}
+
+.sell-gain {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 14px;
+}
+
+.sell-gain .label {
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.sell-gain .value {
+  font-size: 1.2rem;
   font-weight: 700;
 }

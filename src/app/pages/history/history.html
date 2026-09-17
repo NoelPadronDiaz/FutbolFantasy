@@ -48,9 +48,15 @@
                 {{ profit(player) > 0 ? '+' : '' }}{{ profit(player) | euros }}
               </td>
               <td class="actions">
-                <button class="btn small" (click)="openEditDialog(player)">Editar</button>
-                <button class="btn small" (click)="restore(player)">Recuperar</button>
-                <button class="btn small danger" (click)="remove(player)">Eliminar</button>
+                <button class="btn small icon-btn" title="Editar" aria-label="Editar" (click)="openEditDialog(player)">
+                  <app-icon name="edit" />
+                </button>
+                <button class="btn small icon-btn" title="Recuperar" aria-label="Recuperar" (click)="restore(player)">
+                  <app-icon name="restore" />
+                </button>
+                <button class="btn small icon-btn danger" title="Eliminar" aria-label="Eliminar" (click)="remove(player)">
+                  <app-icon name="delete" />
+                </button>
               </td>
             </tr>
           }
