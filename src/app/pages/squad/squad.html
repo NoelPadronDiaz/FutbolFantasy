@@ -130,6 +130,17 @@
           <input type="date" name="saleDate" [(ngModel)]="saleDate" required />
         </label>
 
+        <div class="sell-gain">
+          <div class="label">Ganancia vs. precio de compra ({{ player.purchasePrice | euros }})</div>
+          <div
+            class="value"
+            [class.positive]="(sellGainVsPurchasePrice(player) ?? 0) > 0"
+            [class.negative]="(sellGainVsPurchasePrice(player) ?? 0) < 0"
+          >
+            {{ (sellGainVsPurchasePrice(player) ?? 0) > 0 ? '+' : '' }}{{ sellGainVsPurchasePrice(player) | euros }}
+          </div>
+        </div>
+
         @if (player.realPrice === undefined) {
           <p class="subtitle">Valor real no disponible para este jugador.</p>
         } @else {

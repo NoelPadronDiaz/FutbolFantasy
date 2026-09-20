@@ -159,6 +159,13 @@ export class Squad {
     return this.salePrice - player.realPrice;
   }
 
+  sellGainVsPurchasePrice(player: Player): number | undefined {
+    if (this.salePrice === null) {
+      return undefined;
+    }
+    return this.salePrice - player.purchasePrice;
+  }
+
   async confirmSell(): Promise<void> {
     const player = this.sellingPlayer();
     if (!player || this.salePrice === null || this.salePrice < 0) {
