@@ -106,6 +106,13 @@ export class PlayerService {
     this.playersSignal.update((players) => players.map((p) => (p.id === id ? updated : p)));
   }
 
+  async setClausePrice(id: string, clausePrice: number): Promise<void> {
+    const updated = await firstValueFrom(
+      this.http.patch<Player>(API_URL, { action: 'setClause', clausePrice }, { params: { id } }),
+    );
+    this.playersSignal.update((players) => players.map((p) => (p.id === id ? updated : p)));
+  }
+
   async restorePlayer(id: string): Promise<void> {
     const updated = await firstValueFrom(
       this.http.patch<Player>(API_URL, { action: 'restore' }, { params: { id } }),

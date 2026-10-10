@@ -65,6 +65,7 @@
             <th appSortableHeader field="position" [activeField]="sortField()" [direction]="sortDir()" (sortChange)="toggleSort($event)">Posición</th>
             <th appSortableHeader field="realTeam" [activeField]="sortField()" [direction]="sortDir()" (sortChange)="toggleSort($event)">Equipo</th>
             <th appSortableHeader field="purchasePrice" [activeField]="sortField()" [direction]="sortDir()" (sortChange)="toggleSort($event)">Precio compra</th>
+            <th appSortableHeader field="investedMoney" [activeField]="sortField()" [direction]="sortDir()" (sortChange)="toggleSort($event)">Dinero invertido</th>
             <th appSortableHeader field="realPrice" [activeField]="sortField()" [direction]="sortDir()" (sortChange)="toggleSort($event)">Valor real</th>
             <th appSortableHeader field="priceDiff" [activeField]="sortField()" [direction]="sortDir()" (sortChange)="toggleSort($event)">Diferencia</th>
             <th appSortableHeader field="purchaseDate" [activeField]="sortField()" [direction]="sortDir()" (sortChange)="toggleSort($event)">Fecha compra</th>
@@ -84,9 +85,10 @@
                 }
               </td>
               <td>{{ player.purchasePrice | euros }}</td>
+              <td>{{ investedMoney(player) | euros }}</td>
               <td
-                [class.positive]="player.realPrice !== undefined && player.realPrice > player.purchasePrice"
-                [class.negative]="player.realPrice !== undefined && player.realPrice < player.purchasePrice"
+                [class.positive]="player.realPrice !== undefined && player.realPrice > investedMoney(player)"
+                [class.negative]="player.realPrice !== undefined && player.realPrice < investedMoney(player)"
               >
                 {{ player.realPrice !== undefined ? (player.realPrice | euros) : '-' }}
               </td>
@@ -101,6 +103,9 @@
               <td class="actions">
                 <button class="btn small icon-btn" title="Editar" aria-label="Editar" (click)="openEditDialog(player)">
                   <app-icon name="edit" />
+                </button>
+                <button class="btn small icon-btn" title="Cláusula" aria-label="Cláusula" (click)="openClauseDialog(player)">
+                  <app-icon name="clause" />
                 </button>
                 <button class="btn small icon-btn" title="Vender" aria-label="Vender" (click)="openSellDialog(player)">
                   <app-icon name="sell" />
@@ -160,6 +165,27 @@
           <button type="button" class="btn" (click)="closeSellDialog()">Cancelar</button>
           <button type="submit" class="btn primary" [disabled]="saving()">
             {{ saving() ? 'Guardando…' : 'Confirmar venta' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  }
+
+  @if (clausePlayer(); as player) {
+    <div class="overlay" (click)="closeClauseDialog()">
+      <form class="card dialog" (click)="$event.stopPropagation()" (ngSubmit)="confirmClause()">
+        <h2>Cláusula de {{ player.name }}</h2>
+        <p class="subtitle">
+          Precio de compra: {{ player.purchasePrice | euros }} · Cláusula actual: {{ player.clausePrice | euros }}
+        </p>
+        <label>
+          Dinero en la cláusula (M€)
+          <input type="number" name="clauseAmount" [(ngModel)]="clauseAmount" required min="0" step="0.1" autofocus />
+        </label>
+        <div class="form-actions">
+          <button type="button" class="btn" (click)="closeClauseDialog()">Cancelar</button>
+          <button type="submit" class="btn primary" [disabled]="saving()">
+            {{ saving() ? 'Guardando…' : 'Guardar cláusula' }}
           </button>
         </div>
       </form>

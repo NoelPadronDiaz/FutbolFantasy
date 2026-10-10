@@ -17,11 +17,13 @@ CREATE TABLE IF NOT EXISTS players (
   status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'sold')),
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   user_id UUID REFERENCES users (id),
-  real_price NUMERIC(14, 2)
+  real_price NUMERIC(14, 2),
+  clause_price NUMERIC(14, 2) NOT NULL DEFAULT 0 CHECK (clause_price >= 0)
 );
 
 ALTER TABLE players ADD COLUMN IF NOT EXISTS user_id UUID REFERENCES users (id);
 ALTER TABLE players ADD COLUMN IF NOT EXISTS real_price NUMERIC(14, 2);
+ALTER TABLE players ADD COLUMN IF NOT EXISTS clause_price NUMERIC(14, 2) NOT NULL DEFAULT 0 CHECK (clause_price >= 0);
 
 -- Widen to NUMERIC(14, 2) in case these columns already existed with a
 -- narrower precision (e.g. NUMERIC(10, 2) overflows above ~100M, which real

@@ -94,8 +94,21 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
          RETURNING ${PLAYER_COLUMNS}`,
         [id, userId, name, position, realTeam || null, purchasePrice, purchaseDate],
       )) as PlayerRow[];
+    } else if (action === 'setClause') {
+      const { clausePrice } = req.body ?? {};
+      if (typeof clausePrice !== 'number' || clausePrice < 0) {
+        res.status(400).json({ error: 'clausePrice debe ser un número mayor o igual que 0.' });
+        return;
+      }
+      rows = (await sql.query(
+        `UPDATE players
+         SET clause_price = $3
+         WHERE id = $1 AND user_id = $2
+         RETURNING ${PLAYER_COLUMNS}`,
+        [id, userId, clausePrice],
+      )) as PlayerRow[];
     } else {
-      res.status(400).json({ error: "action debe ser 'sell', 'restore' o 'edit'." });
+      res.status(400).json({ error: "action debe ser 'sell', 'restore', 'edit' o 'setClause'." });
       return;
     }
 

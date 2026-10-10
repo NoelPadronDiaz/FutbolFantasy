@@ -19,12 +19,17 @@ type SquadSortField =
   | 'position'
   | 'realTeam'
   | 'purchasePrice'
+  | 'investedMoney'
   | 'purchaseDate'
   | 'realPrice'
   | 'priceDiff';
 
+function investedMoney(player: Player): number {
+  return player.purchasePrice + player.clausePrice;
+}
+
 function priceDiff(player: Player): number | undefined {
-  return player.realPrice !== undefined ? player.realPrice - player.purchasePrice : undefined;
+  return player.realPrice !== undefined ? player.realPrice - investedMoney(player) : undefined;
 }
 
 function sortValue(player: Player, field: SquadSortField): string | number | undefined {
@@ -37,6 +42,8 @@ function sortValue(player: Player, field: SquadSortField): string | number | und
       return player.realTeam;
     case 'purchasePrice':
       return player.purchasePrice;
+    case 'investedMoney':
+      return investedMoney(player);
     case 'purchaseDate':
       return player.purchaseDate;
     case 'realPrice':
@@ -60,6 +67,7 @@ export class Squad {
   readonly error = this.playerService.error;
   readonly teamCrest = findTeamCrest;
   readonly priceDiff = priceDiff;
+  readonly investedMoney = investedMoney;
 
   updatingRealPrices = signal(false);
 
@@ -97,6 +105,9 @@ export class Squad {
   salePrice: number | null = null;
 
   editingPlayer = signal<Player | null>(null);
+
+  clausePlayer = signal<Player | null>(null);
+  clauseAmount: number | null = null;
 
   toggleAddForm(): void {
     this.showAddForm.update((v) => !v);
@@ -201,6 +212,31 @@ export class Squad {
       this.closeEditDialog();
     } catch {
       alert('No se pudieron guardar los cambios. Inténtalo de nuevo.');
+    } finally {
+      this.saving.set(false);
+    }
+  }
+
+  openClauseDialog(player: Player): void {
+    this.clausePlayer.set(player);
+    this.clauseAmount = player.clausePrice;
+  }
+
+  closeClauseDialog(): void {
+    this.clausePlayer.set(null);
+  }
+
+  async confirmClause(): Promise<void> {
+    const player = this.clausePlayer();
+    if (!player || this.clauseAmount === null || this.clauseAmount < 0) {
+      return;
+    }
+    this.saving.set(true);
+    try {
+      await this.playerService.setClausePrice(player.id, this.clauseAmount);
+      this.closeClauseDialog();
+    } catch {
+      alert('No se pudo actualizar la cláusula. Inténtalo de nuevo.');
     } finally {
       this.saving.set(false);
     }
