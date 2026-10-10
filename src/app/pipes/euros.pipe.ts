@@ -6,6 +6,6 @@ export class EurosPipe implements PipeTransform {
     if (value === undefined || value === null || Number.isNaN(value)) {
       return '-';
     }
-    return `${value.toLocaleString('es-ES', { minimumFractionDigits: 1, maximumFractionDigits: 2 })} M€`;
+    return `${value.toLocaleString('es-ES', { minimumFractionDigits: 0, maximumFractionDigits: 0 })} M€`;
   }
 }
